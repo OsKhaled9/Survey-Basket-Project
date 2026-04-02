@@ -1,4 +1,3 @@
-
 namespace SurveyBasket.Api
 {
     public class Program
@@ -7,15 +6,7 @@ namespace SurveyBasket.Api
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-
-            builder.Services.AddControllers();
-            // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-            builder.Services.AddOpenApi();
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
-
-            builder.Services.AddScoped<IPollService, PollService>();
+            builder.Services.AddDependencies();
 
             var app = builder.Build();
 
