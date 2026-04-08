@@ -1,13 +1,13 @@
 ﻿using Mapster;
 using MapsterMapper;
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
-using System.Reflection;
+using SurveyBasket.Api.Persistence;
 
 namespace SurveyBasket.Api;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddDependencies(this IServiceCollection services)
+    public static IServiceCollection AddDependencies(this IServiceCollection services, IConfiguration configuration)
     {
         // Add services to the container.
         services.AddControllers();
@@ -15,7 +15,8 @@ public static class DependencyInjection
         services
             .AddSwaggerServices()
             .AddMapsterConfiguration()
-            .AddFluentValidationConfiguration();
+            .AddFluentValidationConfiguration()
+            .AddDbContextConfiguration(configuration);
 
         services.AddScoped<IPollService, PollService>();
 
@@ -49,6 +50,17 @@ public static class DependencyInjection
         services
             .AddFluentValidationAutoValidation()
             .AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+
+        return services;
+    }
+
+    public static IServiceCollection AddDbContextConfiguration(this IServiceCollection services, IConfiguration configuration)
+    {
+        // Add Dbcontext Configurations
+        var connectionString = configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection String 'DefaultConnection' is not found!");
+
+        services.AddDbContext<ApplicationDbContext>(option =>
+            option.UseSqlServer(connectionString));
 
         return services;
     }

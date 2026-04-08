@@ -6,7 +6,8 @@ namespace SurveyBasket.Api
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.AddDependencies();
+            // using Dependency Injection Class
+            builder.Services.AddDependencies(builder.Configuration);
 
             var app = builder.Build();
 

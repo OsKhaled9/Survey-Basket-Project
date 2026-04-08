@@ -10,6 +10,6 @@ public class MappingConfigurations : IRegister
     {
         config.NewConfig<IEnumerable<Poll>, IEnumerable<PollResponse>>();
         config.NewConfig<Poll, PollResponse>();
-        config.NewConfig<CreatePollRequest, Poll>();
+        config.NewConfig<PollRequest, Poll>();
     }
 }
