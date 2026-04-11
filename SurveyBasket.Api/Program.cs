@@ -2,7 +2,7 @@ namespace SurveyBasket.Api
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +10,13 @@ namespace SurveyBasket.Api
             builder.Services.AddDependencies(builder.Configuration);
 
             var app = builder.Build();
+
+            using (var scope = app.Services.CreateScope()) // ==> AddScoped<>()
+            {
+                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+                await UserSeeder.SeedAsync(userManager);
+            }
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
