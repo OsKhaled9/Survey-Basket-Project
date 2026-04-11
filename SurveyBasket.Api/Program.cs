@@ -11,13 +11,6 @@ namespace SurveyBasket.Api
 
             var app = builder.Build();
 
-            using (var scope = app.Services.CreateScope()) // ==> AddScoped<>()
-            {
-                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-
-                await UserSeeder.SeedAsync(userManager);
-            }
-
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
