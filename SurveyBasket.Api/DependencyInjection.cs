@@ -15,6 +15,17 @@ public static class DependencyInjection
         // Add services to the container.
         services.AddControllers();
 
+        var allowedOrigins = "";
+
+        services.AddCors(options =>
+            options.AddDefaultPolicy(builder =>
+                builder
+                       .AllowAnyMethod()
+                       .AllowAnyHeader()
+                       .WithOrigins(configuration.GetSection("AllowedOrigins").Get<string[]>()!)
+            )
+        );
+
         services
             .AddSwaggerServicesConfiguration()
             .AddMapsterConfiguration()
