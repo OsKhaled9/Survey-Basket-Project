@@ -27,7 +27,7 @@ public class PollsController(IPollService pollService) : ControllerBase
 
         return result.IsSuccess
             ? Ok(result.Value)
-            : Problem(statusCode: StatusCodes.Status404NotFound, title: result.Error.Code, detail: result.Error.Description);
+            : result.ToProblem(statusCode: StatusCodes.Status404NotFound);
     }
 
     [HttpPost]
@@ -44,7 +44,9 @@ public class PollsController(IPollService pollService) : ControllerBase
         var result = await _pollService.UpdateAsync(id, request, cancellationToken);
 
         //return result.IsSuccess ? NoContent() : NotFound(result.Error);
-        return result.IsSuccess ? NoContent() : Problem(statusCode: StatusCodes.Status404NotFound, title: result.Error.Code, detail: result.Error.Description);
+        return result.IsSuccess
+            ? NoContent()
+            : result.ToProblem(statusCode: StatusCodes.Status404NotFound);
     }
 
     [HttpDelete("{id}")]
@@ -52,7 +54,9 @@ public class PollsController(IPollService pollService) : ControllerBase
     {
         var result = await _pollService.DeleteAsync(id, cancellationToken);
 
-        return result.IsSuccess ? NoContent() : Problem(statusCode: StatusCodes.Status404NotFound, title: result.Error.Code, detail: result.Error.Description);
+        return result.IsSuccess
+            ? NoContent()
+            : result.ToProblem(statusCode: StatusCodes.Status404NotFound);
     }
 
     [HttpPut("{id}/togglePublish")]
@@ -60,6 +64,8 @@ public class PollsController(IPollService pollService) : ControllerBase
     {
         var result = await _pollService.TogglePublishStatusAsync(id, cancellationToken);
 
-        return result.IsSuccess ? NoContent() : Problem(statusCode: StatusCodes.Status404NotFound, title: result.Error.Code, detail: result.Error.Description);
+        return result.IsSuccess
+            ? NoContent()
+            : result.ToProblem(statusCode: StatusCodes.Status404NotFound);
     }
 }
