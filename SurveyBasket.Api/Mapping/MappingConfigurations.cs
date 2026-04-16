@@ -1,6 +1,4 @@
-﻿using Mapster;
-
-namespace SurveyBasket.Api.Mapping;
+﻿namespace SurveyBasket.Api.Mapping;
 
 public class MappingConfigurations : IRegister
 {
@@ -9,5 +7,8 @@ public class MappingConfigurations : IRegister
         config.NewConfig<IEnumerable<Poll>, IEnumerable<PollResponse>>();
         config.NewConfig<Poll, PollResponse>();
         config.NewConfig<PollRequest, Poll>();
+
+        config.NewConfig<QuestionRequest, Question>()
+            .Map(dest => dest.Answers, src => src.Answers.Select(answer => new Answer() { Content = answer }));
     }
 }
