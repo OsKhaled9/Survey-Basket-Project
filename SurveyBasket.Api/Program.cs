@@ -27,6 +27,9 @@ namespace SurveyBasket.Api
 
             app.MapControllers();
 
+            // Adding Custom global exception handling middleware
+            app.UseExceptionHandler();
+
             app.Run();
         }
     }
