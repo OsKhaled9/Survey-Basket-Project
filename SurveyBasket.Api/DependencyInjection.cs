@@ -1,5 +1,4 @@
-﻿using Mapster;
-using MapsterMapper;
+﻿using MapsterMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
@@ -35,6 +34,10 @@ public static class DependencyInjection
 
         services.AddScoped<IPollService, PollService>();
         services.AddScoped<IAuthService, AuthService>();
+
+        // Add Custom Global Exception Handler
+        services.AddExceptionHandler<GlobalExceptionHandler>();
+        services.AddProblemDetails();
 
         return services;
     }

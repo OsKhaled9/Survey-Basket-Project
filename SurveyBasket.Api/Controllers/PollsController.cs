@@ -33,9 +33,12 @@ public class PollsController(IPollService pollService) : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Add([FromBody] PollRequest request, CancellationToken cancellationToken)
     {
-        var newPoll = await _pollService.AddAsync(request, cancellationToken);
+        var result = await _pollService.AddAsync(request, cancellationToken);
 
-        return CreatedAtAction(nameof(GetById), new { id = newPoll.Id }, newPoll.Adapt<PollResponse>());
+        //return CreatedAtAction(nameof(GetById), new { id = newPoll.Id }, newPoll.Adapt<PollResponse>());
+        return result.IsSuccess
+            ? CreatedAtAction(nameof(GetById), new { id = result.Value.Id }, result.Value)
+            : result.ToProblem(statusCode: StatusCodes.Status409Conflict);
     }
 
     [HttpPut("{id}")]
@@ -43,10 +46,20 @@ public class PollsController(IPollService pollService) : ControllerBase
     {
         var result = await _pollService.UpdateAsync(id, request, cancellationToken);
 
-        //return result.IsSuccess ? NoContent() : NotFound(result.Error);
-        return result.IsSuccess
-            ? NoContent()
-            : result.ToProblem(statusCode: StatusCodes.Status404NotFound);
+        if (result.IsSuccess)
+            return NoContent();
+
+        return result.Error.Equals(PollErrors.DuplicatedPollTitle)
+                ? result.ToProblem(StatusCodes.Status409Conflict)
+                : result.ToProblem(StatusCodes.Status404NotFound);
+
+        //return result.IsSuccess
+        //    ? NoContent()
+        //    : result.ToProblem(
+        //        result.Error.Equals(PollErrors.DuplicatedPollTitle) 
+        //        ? StatusCodes.Status409Conflict 
+        //        : StatusCodes.Status404NotFound
+        //    );
     }
 
     [HttpDelete("{id}")]
