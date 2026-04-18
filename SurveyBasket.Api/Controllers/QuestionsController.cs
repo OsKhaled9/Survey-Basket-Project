@@ -13,7 +13,7 @@ public class QuestionsController(IQuestionService questionService) : ControllerB
 
         return result.IsSuccess
                 ? Ok(result.Value)
-                : result.ToProblem(StatusCodes.Status404NotFound);
+                : result.ToProblem();
     }
 
     [HttpGet("{id}")]
@@ -23,7 +23,7 @@ public class QuestionsController(IQuestionService questionService) : ControllerB
 
         return result.IsSuccess
                 ? Ok(result.Value)
-                : result.ToProblem(StatusCodes.Status404NotFound);
+                : result.ToProblem();
     }
 
     [HttpPost("")]
@@ -31,12 +31,9 @@ public class QuestionsController(IQuestionService questionService) : ControllerB
     {
         var result = await _questionService.AddAsync(pollId, request, cancellationToken);
 
-        if (result.IsSuccess)
-            return CreatedAtAction(nameof(GetById), new { pollId = pollId, id = result.Value.Id }, result.Value);
-
-        return result.Error.Equals(QuestionErrors.DuplicatedQuestionContent)
-                ? result.ToProblem(StatusCodes.Status409Conflict)
-                : result.ToProblem(StatusCodes.Status404NotFound);
+        return result.IsSuccess
+                ? CreatedAtAction(nameof(GetById), new { pollId = pollId, id = result.Value.Id }, result.Value)
+                : result.ToProblem();
     }
 
     [HttpPut("{id}")]
@@ -44,12 +41,9 @@ public class QuestionsController(IQuestionService questionService) : ControllerB
     {
         var result = await _questionService.UpdateAsync(pollId, id, request, cancellationToken);
 
-        if (result.IsSuccess)
-            return NoContent();
-
-        return result.Error.Equals(QuestionErrors.DuplicatedQuestionContent)
-                ? result.ToProblem(StatusCodes.Status409Conflict)
-                : result.ToProblem(StatusCodes.Status404NotFound);
+        return result.IsSuccess
+                ? NoContent()
+                : result.ToProblem();
     }
 
     [HttpPut("{id}/toggleStatus")]
@@ -59,6 +53,6 @@ public class QuestionsController(IQuestionService questionService) : ControllerB
 
         return result.IsSuccess
             ? NoContent()
-            : result.ToProblem(statusCode: StatusCodes.Status404NotFound);
+            : result.ToProblem();
     }
 }
