@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-
-namespace SurveyBasket.Api.Controllers;
+﻿namespace SurveyBasket.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -13,11 +11,13 @@ public class PollsController(IPollService pollService) : ControllerBase
     [HttpGet("")]
     public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
-        var polls = await _pollService.GetAllAsync(cancellationToken);
+        return Ok(await _pollService.GetAllAsync(cancellationToken));
+    }
 
-        var response = polls.Adapt<IEnumerable<PollResponse>>();
-
-        return Ok(response);
+    [HttpGet("current")]
+    public async Task<IActionResult> GetCurrent(CancellationToken cancellationToken)
+    {
+        return Ok(await _pollService.GetCurrentAsync(cancellationToken));
     }
 
     [HttpGet("{id}")]
@@ -27,7 +27,7 @@ public class PollsController(IPollService pollService) : ControllerBase
 
         return result.IsSuccess
             ? Ok(result.Value)
-            : result.ToProblem(statusCode: StatusCodes.Status404NotFound);
+            : result.ToProblem();
     }
 
     [HttpPost]
@@ -38,7 +38,7 @@ public class PollsController(IPollService pollService) : ControllerBase
         //return CreatedAtAction(nameof(GetById), new { id = newPoll.Id }, newPoll.Adapt<PollResponse>());
         return result.IsSuccess
             ? CreatedAtAction(nameof(GetById), new { id = result.Value.Id }, result.Value)
-            : result.ToProblem(statusCode: StatusCodes.Status409Conflict);
+            : result.ToProblem();
     }
 
     [HttpPut("{id}")]
@@ -46,12 +46,9 @@ public class PollsController(IPollService pollService) : ControllerBase
     {
         var result = await _pollService.UpdateAsync(id, request, cancellationToken);
 
-        if (result.IsSuccess)
-            return NoContent();
-
-        return result.Error.Equals(PollErrors.DuplicatedPollTitle)
-                ? result.ToProblem(StatusCodes.Status409Conflict)
-                : result.ToProblem(StatusCodes.Status404NotFound);
+        return result.IsSuccess
+            ? NoContent()
+            : result.ToProblem();
 
         //return result.IsSuccess
         //    ? NoContent()
@@ -69,7 +66,7 @@ public class PollsController(IPollService pollService) : ControllerBase
 
         return result.IsSuccess
             ? NoContent()
-            : result.ToProblem(statusCode: StatusCodes.Status404NotFound);
+            : result.ToProblem();
     }
 
     [HttpPut("{id}/togglePublish")]
@@ -79,6 +76,6 @@ public class PollsController(IPollService pollService) : ControllerBase
 
         return result.IsSuccess
             ? NoContent()
-            : result.ToProblem(statusCode: StatusCodes.Status404NotFound);
+            : result.ToProblem();
     }
 }
