@@ -12,6 +12,7 @@ global using SurveyBasket.Api.Contracts.Answers;
 global using SurveyBasket.Api.Contracts.Authentication;
 global using SurveyBasket.Api.Contracts.Polls;
 global using SurveyBasket.Api.Contracts.Questions;
+global using SurveyBasket.Api.Contracts.Results;
 global using SurveyBasket.Api.Contracts.Votes;
 global using SurveyBasket.Api.Entities;
 global using SurveyBasket.Api.Errors;
