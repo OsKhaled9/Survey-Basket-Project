@@ -1,3 +1,5 @@
+using Serilog;
+
 namespace SurveyBasket.Api
 {
     public class Program
@@ -9,6 +11,11 @@ namespace SurveyBasket.Api
             // using Dependency Injection Class
             builder.Services.AddDependencies(builder.Configuration);
 
+            // using serilog for logging
+            builder.Host.UseSerilog((context, configuration) =>
+                configuration.ReadFrom.Configuration(context.Configuration)
+            );
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -17,6 +24,9 @@ namespace SurveyBasket.Api
                 app.MapOpenApi();
                 app.UseSwaggerUI(option => option.SwaggerEndpoint("/openapi/v1.json", "v1"));
             }
+
+            // using serilog for logging
+            app.UseSerilogRequestLogging();
 
             app.UseHttpsRedirection();
 
