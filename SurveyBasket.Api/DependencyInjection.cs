@@ -43,6 +43,7 @@ public static class DependencyInjection
         services.AddScoped<IResultService, ResultService>();
         services.AddScoped<IEmailSender, EmailService>();
         services.AddScoped<INotificationService, NotificationService>();
+        services.AddScoped<IUserService, UserService>();
 
         // Add Custom Global Exception Handler
         services.AddExceptionHandler<GlobalExceptionHandler>();
