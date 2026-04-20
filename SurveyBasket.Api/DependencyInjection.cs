@@ -1,8 +1,10 @@
 ﻿using MapsterMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.IdentityModel.Tokens;
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
 using SurveyBasket.Api.Authentication;
+using SurveyBasket.Api.Settings;
 using System.Text;
 
 namespace SurveyBasket.Api;
@@ -38,10 +40,16 @@ public static class DependencyInjection
         services.AddScoped<IQuestionService, QuestionService>();
         services.AddScoped<IVoteService, VoteService>();
         services.AddScoped<IResultService, ResultService>();
+        services.AddScoped<IEmailSender, EmailService>();
 
         // Add Custom Global Exception Handler
         services.AddExceptionHandler<GlobalExceptionHandler>();
         services.AddProblemDetails();
+
+        // using of IHttpContextAccessor
+        services.AddHttpContextAccessor();
+
+        services.Configure<MailSettings>(configuration.GetSection(nameof(MailSettings)));
 
         return services;
     }
@@ -123,6 +131,15 @@ public static class DependencyInjection
                 ValidIssuer = jwtSettings?.Issuer,
                 ValidAudience = jwtSettings?.Audience
             };
+        });
+
+        services.Configure<IdentityOptions>(options =>
+        {
+            options.Password.RequiredLength = 8;
+
+            options.SignIn.RequireConfirmedEmail = true;
+
+            options.User.RequireUniqueEmail = true;
         });
 
         return services;

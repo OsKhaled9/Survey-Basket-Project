@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="9.5.4" />
+    <PackageReference Include="MailKit" Version="4.16.0" />
     <PackageReference Include="Mapster" Version="10.0.6" />
     <PackageReference Include="Mapster.DependencyInjection" Version="10.0.6" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.14" />
