@@ -1,3 +1,5 @@
+using Hangfire;
+using HangfireBasicAuthenticationFilter;
 using Serilog;
 
 namespace SurveyBasket.Api
@@ -30,6 +32,28 @@ namespace SurveyBasket.Api
 
             app.UseHttpsRedirection();
 
+            // using Background Jobs (Hangfire)
+            app.UseHangfireDashboard("/jobs", new DashboardOptions()
+            {
+                Authorization =
+                [
+                    new HangfireCustomBasicAuthenticationFilter()
+                    {
+                        User = app.Configuration.GetValue<string>("HangfireSettings:UserName"),
+                        Pass = app.Configuration.GetValue<string>("HangfireSettings:Password")
+                    }
+                ],
+                DashboardTitle = "Survey Basket Dashboard",
+                //IsReadOnlyFunc = (DashboardContext context) => true
+            });
+
+            var scopeFactory = app.Services.GetRequiredService<IServiceScopeFactory>();
+            using var scope = scopeFactory.CreateScope();
+            var notificationService = scope.ServiceProvider.GetRequiredService<INotificationService>();
+
+            RecurringJob.AddOrUpdate("SendNewPollsNotification", () => notificationService.SendNewPollsNotification(null), Cron.Daily); // everyday on 12 am
+
+            // using CORS
             app.UseCors();
 
             app.UseAuthorization();
