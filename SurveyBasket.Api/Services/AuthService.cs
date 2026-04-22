@@ -14,7 +14,8 @@ public class AuthService(
     IJwtProvider jwtProvider,
     ILogger<AuthService> logger,
     IEmailSender emailSender,
-    IHttpContextAccessor httpContextAccessor) : IAuthService
+    IHttpContextAccessor httpContextAccessor,
+    ApplicationDbContext context) : IAuthService
 {
     private readonly UserManager<ApplicationUser> _userManager = userManager;
     private readonly SignInManager<ApplicationUser> _signInManager = signInManager;
@@ -22,6 +23,7 @@ public class AuthService(
     private readonly ILogger<AuthService> _logger = logger;
     private readonly IEmailSender _emailSender = emailSender;
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+    private readonly ApplicationDbContext _context = context;
 
     private readonly int _refreshTokenExpiryDays = 14; // Example refresh token expiry time in days
 
@@ -46,8 +48,10 @@ public class AuthService(
 
         if (result.Succeeded)
         {
+            var (userRoles, userPermissions) = await GetUserRolesAndPermissions(user, cancellationToken);
+
             // Generate jwt token
-            var (token, expiresIn) = _jwtProvider.GenerateToken(user);
+            var (token, expiresIn) = _jwtProvider.GenerateToken(user, userRoles, userPermissions);
 
             // Generate refresh token
             var refreshToken = GenerateRefreshToken();
@@ -89,8 +93,10 @@ public class AuthService(
 
         userRefreshToken.RevokedOn = DateTime.UtcNow;
 
+        var (userRoles, userPermissions) = await GetUserRolesAndPermissions(user, cancellationToken);
+
         // Generate jwt token
-        var (newtoken, expiresIn) = _jwtProvider.GenerateToken(user);
+        var (newtoken, expiresIn) = _jwtProvider.GenerateToken(user, userRoles, userPermissions);
 
         // Generate refresh token
         var newRefreshToken = GenerateRefreshToken();
@@ -185,7 +191,11 @@ public class AuthService(
         var result = await _userManager.ConfirmEmailAsync(user, code);
 
         if (result.Succeeded)
+        {
+            await _userManager.AddToRoleAsync(user, DefaultRoles.Member);
             return Result.Success();
+        }
+
 
         var error = result.Errors.First();
 
@@ -293,5 +303,35 @@ public class AuthService(
         BackgroundJob.Enqueue(() => _emailSender.SendEmailAsync(user.Email!, "✅ Survey Basket: Change Password", emailBody));
 
         await Task.CompletedTask;
+    }
+
+    private async Task<(IEnumerable<string> roles, IEnumerable<string> permissions)> GetUserRolesAndPermissions(ApplicationUser user, CancellationToken cancellationToken)
+    {
+        // select roles assigned to user
+        var userRoles = await _userManager.GetRolesAsync(user);
+
+        // select claims assigned to user
+        //var userPermissions = await _context.Roles
+        //    .Join(_context.RoleClaims,
+        //        role => role.Id,
+        //        claim => claim.RoleId,
+        //        (role, claim) => new { role, claim }
+        //    )
+        //    .Where(x => userRoles.Contains(x.role.Name!))
+        //    .Select(x => x.claim.ClaimValue!)
+        //    .Distinct()
+        //    .ToListAsync(cancellationToken);
+
+        var userPermissions = await (
+                from r in _context.Roles
+                join p in _context.RoleClaims
+                on r.Id equals p.RoleId
+                where userRoles.Contains(r.Name!)
+                select p.ClaimValue!
+            )
+            .Distinct()
+            .ToListAsync(cancellationToken);
+
+        return (userRoles, userPermissions);
     }
 }

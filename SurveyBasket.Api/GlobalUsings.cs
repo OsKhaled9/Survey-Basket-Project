@@ -9,6 +9,7 @@ global using Microsoft.EntityFrameworkCore.Metadata.Builders;
 global using Microsoft.Extensions.Options;
 global using SurveyBasket.Api.Abstractions;
 global using SurveyBasket.Api.Abstractions.Consts;
+global using SurveyBasket.Api.Authentication.Filters;
 global using SurveyBasket.Api.Contracts.Answers;
 global using SurveyBasket.Api.Contracts.Authentication;
 global using SurveyBasket.Api.Contracts.Polls;
