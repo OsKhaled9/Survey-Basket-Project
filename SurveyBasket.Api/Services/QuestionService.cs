@@ -1,6 +1,5 @@
-﻿
-
-using Microsoft.Extensions.Caching.Hybrid;
+﻿using Microsoft.Extensions.Caching.Hybrid;
+using System.Linq.Dynamic.Core;
 
 namespace SurveyBasket.Api.Services;
 
@@ -15,29 +14,55 @@ public class QuestionService(
 
     private const string _cachPrefix = "availableQuestions";
 
-    public async Task<Result<IEnumerable<QuestionResponse>>> GetAllAsync(int pollId, CancellationToken cancellationToken = default)
+    //public async Task<Result<IEnumerable<QuestionResponse>>> GetAllAsync(int pollId, CancellationToken cancellationToken = default)
+    //{
+    //    var pollIsExists = await _context.Polls.AnyAsync(x => x.Id == pollId, cancellationToken);
+
+    //    if (!pollIsExists)
+    //        return Result.Failure<IEnumerable<QuestionResponse>>(PollErrors.PollNotFound);
+
+    //    var questions = await _context.Questions
+    //        .Where(x => x.PollId == pollId)
+    //        .Include(x => x.Answers)
+    //        //.Select(q => new QuestionResponse(
+    //        //    q.Id,
+    //        //    q.Content,
+    //        //    q.Answers.Select(a => new AnswerResponse(
+    //        //        a.Id,
+    //        //        a.Content
+    //        //    ))
+    //        //))
+    //        .ProjectToType<QuestionResponse>() // from mapster
+    //        .AsNoTracking()
+    //        .ToListAsync(cancellationToken);
+
+    //    return Result.Success<IEnumerable<QuestionResponse>>(questions);
+    //}
+
+    public async Task<Result<PaginatedList<QuestionResponse>>> GetAllAsync(int pollId, RequestFilters filters, CancellationToken cancellationToken = default)
     {
         var pollIsExists = await _context.Polls.AnyAsync(x => x.Id == pollId, cancellationToken);
 
         if (!pollIsExists)
-            return Result.Failure<IEnumerable<QuestionResponse>>(PollErrors.PollNotFound);
+            return Result.Failure<PaginatedList<QuestionResponse>>(PollErrors.PollNotFound);
 
-        var questions = await _context.Questions
-            .Where(x => x.PollId == pollId)
-            .Include(x => x.Answers)
-            //.Select(q => new QuestionResponse(
-            //    q.Id,
-            //    q.Content,
-            //    q.Answers.Select(a => new AnswerResponse(
-            //        a.Id,
-            //        a.Content
-            //    ))
-            //))
-            .ProjectToType<QuestionResponse>() // from mapster
-            .AsNoTracking()
-            .ToListAsync(cancellationToken);
+        var query = _context.Questions
+            .Where(x => x.PollId == pollId);
 
-        return Result.Success<IEnumerable<QuestionResponse>>(questions);
+        if (!string.IsNullOrEmpty(filters.SearchValue))
+            query = query.Where(x => x.Content.Contains(filters.SearchValue));
+
+        if (!string.IsNullOrEmpty(filters.SortColumn))
+            query = query.OrderBy($"{filters.SortColumn} {filters.SortDirection}");
+
+        var source = query
+                        .Include(x => x.Answers)
+                        .ProjectToType<QuestionResponse>() // from mapster
+                        .AsNoTracking();
+
+        var questions = await PaginatedList<QuestionResponse>.CreateAsync(source, filters.PageNumber, filters.PageSize, cancellationToken);
+
+        return Result.Success(questions);
     }
 
     public async Task<Result<IEnumerable<QuestionResponse>>> GetAvailableAsync(int pollId, string userId, CancellationToken cancellationToken = default)
