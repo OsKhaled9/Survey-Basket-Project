@@ -339,6 +339,9 @@ namespace SurveyBasket.Api.Persistence.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<bool>("IsDisabled")
+                        .HasColumnType("bit");
+
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -398,6 +401,7 @@ namespace SurveyBasket.Api.Persistence.Migrations
                             Email = "admin@survey-basket.com",
                             EmailConfirmed = true,
                             FirstName = "Survey Basket",
+                            IsDisabled = false,
                             LastName = "Admin",
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@SURVEY-BASKET.COM",
