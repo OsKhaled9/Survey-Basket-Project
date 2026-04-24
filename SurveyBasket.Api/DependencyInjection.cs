@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.IdentityModel.Tokens;
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
 using SurveyBasket.Api.Authentication;
+using SurveyBasket.Api.Health;
 using SurveyBasket.Api.Settings;
 using System.Text;
 
@@ -57,6 +58,14 @@ public static class DependencyInjection
         services.AddHttpContextAccessor();
 
         services.Configure<MailSettings>(configuration.GetSection(nameof(MailSettings)));
+
+        // using Health Check
+        services.AddHealthChecks()
+            .AddSqlServer(name: "database", connectionString: configuration.GetConnectionString("DefaultConnection")!)
+            .AddHangfire(options => { options.MinimumAvailableServers = 1; })
+            //.AddUrlGroup(name: "google api", uri: new Uri("https://www.google.com"), tags: ["api"], httpMethod: HttpMethod.Get)
+            //.AddUrlGroup(name: "meta api", uri: new Uri("https://www.facebook.com"), tags: ["api"], httpMethod: HttpMethod.Get)
+            .AddCheck<MailProviderHealthCheck>(name: "mail service");
 
         return services;
     }

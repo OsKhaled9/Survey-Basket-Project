@@ -1,5 +1,7 @@
 using Hangfire;
 using HangfireBasicAuthenticationFilter;
+using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Serilog;
 
 namespace SurveyBasket.Api
@@ -62,6 +64,18 @@ namespace SurveyBasket.Api
 
             // Adding Custom global exception handling middleware
             app.UseExceptionHandler();
+
+            // using health checks
+            app.MapHealthChecks("health", new HealthCheckOptions()
+            {
+                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+            });
+
+            //app.MapHealthChecks("health-check-api", new HealthCheckOptions()
+            //{
+            //    Predicate = x => x.Tags.Contains("api"),
+            //    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+            //});
 
             app.Run();
         }
