@@ -2,12 +2,14 @@
 using MapsterMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
 using SurveyBasket.Api.Authentication;
 using SurveyBasket.Api.Health;
 using SurveyBasket.Api.Settings;
 using System.Text;
+using System.Threading.RateLimiting;
 
 namespace SurveyBasket.Api;
 
@@ -66,6 +68,9 @@ public static class DependencyInjection
             //.AddUrlGroup(name: "google api", uri: new Uri("https://www.google.com"), tags: ["api"], httpMethod: HttpMethod.Get)
             //.AddUrlGroup(name: "meta api", uri: new Uri("https://www.facebook.com"), tags: ["api"], httpMethod: HttpMethod.Get)
             .AddCheck<MailProviderHealthCheck>(name: "mail service");
+
+        // uisng Rate Limiting
+        services.AddRateLimitingConfiguration();
 
         return services;
     }
@@ -181,6 +186,82 @@ public static class DependencyInjection
 
         // Add the processing server as IHostedService
         services.AddHangfireServer();
+
+        return services;
+    }
+
+    private static IServiceCollection AddRateLimitingConfiguration(this IServiceCollection services)
+    {
+        services.AddRateLimiter(rateLimiterOptions =>
+        {
+            rateLimiterOptions.RejectionStatusCode = StatusCodes.Status429TooManyRequests; // instead of return 503 (Service UnAvailable) status code
+
+            // IP Address Limiter (Custom Rate Limiting)
+            rateLimiterOptions.AddPolicy(RateLimiters.IpLimiter, httpContext =>
+                RateLimitPartition.GetFixedWindowLimiter(
+                    partitionKey: httpContext.Connection.RemoteIpAddress?.ToString(), // IP Address for User
+                    factory: _ => new FixedWindowRateLimiterOptions()
+                    {
+                        PermitLimit = 2,
+                        Window = TimeSpan.FromSeconds(20)
+                    }
+                )
+            );
+
+
+            // User Limiter
+            rateLimiterOptions.AddPolicy(RateLimiters.UserLimiter, httpContext =>
+                RateLimitPartition.GetFixedWindowLimiter(
+                    partitionKey: httpContext.User.GetUserId(), // Id for User
+                    factory: _ => new FixedWindowRateLimiterOptions()
+                    {
+                        PermitLimit = 2,
+                        Window = TimeSpan.FromSeconds(20)
+                    }
+                )
+            );
+
+            // Concurrency Limiter
+            rateLimiterOptions.AddConcurrencyLimiter(RateLimiters.Concurrency, options =>
+            {
+                options.PermitLimit = 1000; // receive 10 requests in the same time
+                options.QueueLimit = 100; // receive 5 requests added in the queue                         
+                options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+            });
+
+
+            // Token Bucket Limiter
+            //rateLimiterOptions.AddTokenBucketLimiter("token", options =>
+            //{
+            //    options.TokenLimit = 2; // receive 100 requests in the same time
+            //    options.QueueLimit = 1; // receive 5 requests added in the queue                         
+            //    options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+            //    options.ReplenishmentPeriod = TimeSpan.FromSeconds(30); // will add 2 token every 30 seconds
+            //    options.TokensPerPeriod = 2;
+            //    options.AutoReplenishment = true;
+            //});
+
+
+            // Fixed Window Limiter
+            //rateLimiterOptions.AddFixedWindowLimiter("fixed", options =>
+            //{
+            //    options.PermitLimit = 2; // receive 10 requests in the same time
+            //    options.Window = TimeSpan.FromSeconds(20);
+            //    options.QueueLimit = 1; // receive 5 requests added in the queue                         
+            //    options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+            //});
+
+
+            // Sliding Window Limiter
+            //rateLimiterOptions.AddSlidingWindowLimiter("sliding", options =>
+            //{
+            //    options.PermitLimit = 2; // receive 10 requests in the same time
+            //    options.Window = TimeSpan.FromSeconds(20);
+            //    options.SegmentsPerWindow = 2;
+            //    options.QueueLimit = 1; // receive 5 requests added in the queue                         
+            //    options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+            //});
+        });
 
         return services;
     }
