@@ -65,6 +65,9 @@ namespace SurveyBasket.Api
             // Adding Custom global exception handling middleware
             app.UseExceptionHandler();
 
+            // using Rate Limiting
+            app.UseRateLimiter();
+
             // using health checks
             app.MapHealthChecks("health", new HealthCheckOptions()
             {
