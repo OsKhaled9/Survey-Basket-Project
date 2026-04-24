@@ -1,4 +1,5 @@
-﻿using Hangfire;
+﻿using Asp.Versioning;
+using Hangfire;
 using MapsterMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -71,6 +72,21 @@ public static class DependencyInjection
 
         // uisng Rate Limiting
         services.AddRateLimitingConfiguration();
+
+        // using Api Versioning
+        services.AddApiVersioning(options =>
+        {
+            options.DefaultApiVersion = new ApiVersion(1);
+            options.AssumeDefaultVersionWhenUnspecified = true;
+            options.ReportApiVersions = true;
+
+            options.ApiVersionReader = new HeaderApiVersionReader("x-api-version");
+        })
+        .AddApiExplorer(options =>
+        {
+            options.GroupNameFormat = "'v'V";
+            options.SubstituteApiVersionInUrl = true;
+        });
 
         return services;
     }

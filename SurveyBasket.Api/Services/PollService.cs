@@ -15,11 +15,18 @@ public class PollService(
                       .ProjectToType<PollResponse>()
                       .ToListAsync(cancellationToken);
 
-    public async Task<IEnumerable<PollResponse>> GetCurrentAsync(CancellationToken cancellationToken = default) =>
+    public async Task<IEnumerable<PollResponse>> GetCurrentAsyncV1(CancellationToken cancellationToken = default) =>
          await _context.Polls
                        .Where(x => x.IsPublished && x.StartsAt <= DateOnly.FromDateTime(DateTime.UtcNow) && x.EndsAt >= DateOnly.FromDateTime(DateTime.UtcNow))
                        .AsNoTracking()
                        .ProjectToType<PollResponse>()
+                       .ToListAsync(cancellationToken);
+
+    public async Task<IEnumerable<PollResponseV2>> GetCurrentAsyncV2(CancellationToken cancellationToken = default) =>
+         await _context.Polls
+                       .Where(x => x.IsPublished && x.StartsAt <= DateOnly.FromDateTime(DateTime.UtcNow) && x.EndsAt >= DateOnly.FromDateTime(DateTime.UtcNow))
+                       .AsNoTracking()
+                       .ProjectToType<PollResponseV2>()
                        .ToListAsync(cancellationToken);
 
     public async Task<Result<PollResponse>> GetByIdAsync(int id, CancellationToken cancellationToken = default)

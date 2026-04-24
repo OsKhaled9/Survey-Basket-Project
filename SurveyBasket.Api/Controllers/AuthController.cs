@@ -9,7 +9,7 @@ public class AuthController(IAuthService authService, ILogger<AuthController> lo
     private readonly IAuthService _authService = authService;
     private readonly ILogger<AuthController> _logger = logger;
 
-    [HttpPost]
+    [HttpPost("")]
     public async Task<IActionResult> Login([FromBody] LoginRequest request, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Logging with email: {email} and password: {password}", request.Email, request.Password);
