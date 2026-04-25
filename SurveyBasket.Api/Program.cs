@@ -26,12 +26,6 @@ namespace SurveyBasket.Api
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
-                //app.UseSwagger();
-                //app.UseSwaggerUI(option => option.SwaggerEndpoint("/openapi/v1.json", "v1"));
-
-                // using OpenApi
-                //app.MapOpenApi()
-                //    .RequireAuthorization("ApiAdminPolicy");
                 app.MapOpenApi();
                 app.MapScalarApiReference();
             }
@@ -80,12 +74,6 @@ namespace SurveyBasket.Api
             {
                 ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
             });
-
-            //app.MapHealthChecks("health-check-api", new HealthCheckOptions()
-            //{
-            //    Predicate = x => x.Tags.Contains("api"),
-            //    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-            //});
 
             app.Run();
         }

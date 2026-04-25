@@ -1,20 +1,12 @@
 ﻿namespace SurveyBasket.Api.Controllers;
+
+[ApiVersion(1, Deprecated = true)]
+[ApiVersion(2)]
 [Route("api/polls/{pollId}/[controller]")]
 [ApiController]
 public class QuestionsController(IQuestionService questionService) : ControllerBase
 {
     private readonly IQuestionService _questionService = questionService;
-
-    //[HttpGet("")]
-    //[HasPermission(Permissions.GetQuestions)]
-    //public async Task<IActionResult> GetAll([FromRoute] int pollId, CancellationToken cancellationToken)
-    //{
-    //    var result = await _questionService.GetAllAsync(pollId, cancellationToken);
-
-    //    return result.IsSuccess
-    //            ? Ok(result.Value)
-    //            : result.ToProblem();
-    //}
 
     [HttpGet("")]
     [HasPermission(Permissions.GetQuestions)]
@@ -60,7 +52,7 @@ public class QuestionsController(IQuestionService questionService) : ControllerB
                 : result.ToProblem();
     }
 
-    [HttpPut("{id}/toggleStatus")]
+    [HttpPut("{id}/toggle-status")]
     [HasPermission(Permissions.UpdateQuestions)]
     public async Task<IActionResult> ToggleStatus([FromRoute] int pollId, [FromRoute] int id, CancellationToken cancellationToken)
     {

@@ -4,7 +4,7 @@ public class PermissionAuthorizationHandler : AuthorizationHandler<PermissionsRe
 {
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionsRequirement requirement)
     {
-        var user = context.User.Identity;
+        //var user = context.User.Identity;
 
         //if (user is null || !user.IsAuthenticated)
         //    return;

@@ -1,7 +1,4 @@
-﻿using Asp.Versioning;
-using Microsoft.AspNetCore.RateLimiting;
-
-namespace SurveyBasket.Api.Controllers;
+﻿namespace SurveyBasket.Api.Controllers;
 
 [ApiVersion(1, Deprecated = true)]
 [ApiVersion(2)]
@@ -21,7 +18,7 @@ public class PollsController(IPollService pollService) : ControllerBase
 
     [MapToApiVersion(1)]
     [HttpGet("current")]
-    [Authorize(Roles = DefaultRoles.Member)]
+    [Authorize(Roles = DefaultRoles.Member.Name)]
     [EnableRateLimiting(RateLimiters.UserLimiter)]
     public async Task<IActionResult> GetCurrentV1(CancellationToken cancellationToken)
     {
@@ -30,7 +27,7 @@ public class PollsController(IPollService pollService) : ControllerBase
 
     [MapToApiVersion(2)]
     [HttpGet("current")]
-    [Authorize(Roles = DefaultRoles.Member)]
+    [Authorize(Roles = DefaultRoles.Member.Name)]
     [EnableRateLimiting(RateLimiters.UserLimiter)]
     public async Task<IActionResult> GetCurrentV2(CancellationToken cancellationToken)
     {
@@ -54,7 +51,6 @@ public class PollsController(IPollService pollService) : ControllerBase
     {
         var result = await _pollService.AddAsync(request, cancellationToken);
 
-        //return CreatedAtAction(nameof(GetById), new { id = newPoll.Id }, newPoll.Adapt<PollResponse>());
         return result.IsSuccess
             ? CreatedAtAction(nameof(GetById), new { id = result.Value.Id }, result.Value)
             : result.ToProblem();
@@ -69,14 +65,6 @@ public class PollsController(IPollService pollService) : ControllerBase
         return result.IsSuccess
             ? NoContent()
             : result.ToProblem();
-
-        //return result.IsSuccess
-        //    ? NoContent()
-        //    : result.ToProblem(
-        //        result.Error.Equals(PollErrors.DuplicatedPollTitle) 
-        //        ? StatusCodes.Status409Conflict 
-        //        : StatusCodes.Status404NotFound
-        //    );
     }
 
     [HttpDelete("{id}")]
@@ -90,7 +78,7 @@ public class PollsController(IPollService pollService) : ControllerBase
             : result.ToProblem();
     }
 
-    [HttpPut("{id}/togglePublish")]
+    [HttpPut("{id}/toggle-publish")]
     [HasPermission(Permissions.UpdatePolls)]
     public async Task<IActionResult> TogglePublish([FromRoute] int id, CancellationToken cancellationToken)
     {

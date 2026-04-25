@@ -12,7 +12,6 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        //modelBuilder.ApplyConfiguration(new PollConfiguration());
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
         // (Global) Set DeleteBehavior to Restrict for all cascade delete FKs to prevent accidental cascade deletes
@@ -33,7 +32,6 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
         foreach (var entityEntry in entries)
         {
-            //var currentUserId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier)!;
             var currentUserId = _httpContextAccessor.HttpContext?.User.GetUserId()!;
 
             if (entityEntry.State == EntityState.Added)

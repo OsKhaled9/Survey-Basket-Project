@@ -108,14 +108,6 @@ public class QuestionService(
         var question = await _context.Questions
             .Where(x => x.PollId == pollId && x.Id == id)
             .Include(x => x.Answers)
-            //.Select(q => new QuestionResponse(
-            //    q.Id,
-            //    q.Content,
-            //    q.Answers.Select(a => new AnswerResponse(
-            //        a.Id,
-            //        a.Content
-            //    ))
-            //))
             .ProjectToType<QuestionResponse>() // from mapster
             .AsNoTracking()
             .SingleOrDefaultAsync(cancellationToken);

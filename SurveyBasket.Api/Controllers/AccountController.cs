@@ -1,4 +1,7 @@
 ﻿namespace SurveyBasket.Api.Controllers;
+
+[ApiVersion(1, Deprecated = true)]
+[ApiVersion(2)]
 [Route("me")]
 [ApiController]
 [Authorize]
