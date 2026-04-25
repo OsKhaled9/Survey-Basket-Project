@@ -1,4 +1,5 @@
 ﻿using Asp.Versioning;
+using Asp.Versioning.ApiExplorer;
 using Hangfire;
 using MapsterMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -8,7 +9,9 @@ using Microsoft.IdentityModel.Tokens;
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
 using SurveyBasket.Api.Authentication;
 using SurveyBasket.Api.Health;
+using SurveyBasket.Api.OpenApiTransformers;
 using SurveyBasket.Api.Settings;
+using SurveyBasket.OpenApiTransformers;
 using System.Text;
 using System.Threading.RateLimiting;
 
@@ -34,7 +37,7 @@ public static class DependencyInjection
         );
 
         services
-            .AddSwaggerServicesConfiguration()
+            //.AddSwaggerServicesConfiguration()
             .AddMapsterConfiguration()
             .AddFluentValidationConfiguration()
             .AddDbContextConfiguration(configuration)
@@ -88,18 +91,38 @@ public static class DependencyInjection
             options.SubstituteApiVersionInUrl = true;
         });
 
+        services.AddEndpointsApiExplorer()
+                .AddOpenApiServicesConfiguration();
+
         return services;
     }
 
-    private static IServiceCollection AddSwaggerServicesConfiguration(this IServiceCollection services)
+    private static IServiceCollection AddOpenApiServicesConfiguration(this IServiceCollection services)
     {
-        // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-        services.AddOpenApi();
-        services.AddEndpointsApiExplorer();
-        services.AddSwaggerGen();
+        var serviceProvidor = services.BuildServiceProvider();
+        var apiVersionDescriptionProvidor = serviceProvidor.GetRequiredService<IApiVersionDescriptionProvider>();
+
+        foreach (var description in apiVersionDescriptionProvidor.ApiVersionDescriptions)
+        {
+            services.AddOpenApi(description.GroupName, options =>
+            {
+                options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
+                options.AddDocumentTransformer(new ApiVersioningTransformer(description));
+            });
+        }
 
         return services;
     }
+
+    //private static IServiceCollection AddSwaggerServicesConfiguration(this IServiceCollection services)
+    //{
+    //    // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+    //    //services.AddOpenApi();
+    //    //services.AddEndpointsApiExplorer();
+    //    //services.AddSwaggerGen();
+
+    //    //return services;
+    //}
 
     private static IServiceCollection AddMapsterConfiguration(this IServiceCollection services)
     {
@@ -187,6 +210,12 @@ public static class DependencyInjection
             options.Lockout.MaxFailedAccessAttempts = 5;
             options.Lockout.AllowedForNewUsers = true;
         });
+
+        // using OpenApi
+        //services.AddAuthorization(o =>
+        //{
+        //    o.AddPolicy("ApiAdminPolicy", b => b.RequireRole(DefaultRoles.Admin));
+        //});
 
         return services;
     }
