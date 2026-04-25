@@ -33,8 +33,8 @@ public class NotificationService(
                 .ToListAsync();
         }
 
-        //TODO: select members(normal users) only
-        var users = await _userManager.Users.ToListAsync();
+        // select members(normal users) only
+        var users = await _userManager.GetUsersInRoleAsync(DefaultRoles.Member.Name);
 
         var origin = _httpContextAccessor.HttpContext?.Request.Headers.Origin;
 

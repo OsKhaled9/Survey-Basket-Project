@@ -1,10 +1,8 @@
-﻿using Asp.Versioning;
-using Asp.Versioning.ApiExplorer;
+﻿using Asp.Versioning.ApiExplorer;
 using Hangfire;
 using MapsterMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity.UI.Services;
-using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
 using SurveyBasket.Api.Authentication;
@@ -37,7 +35,6 @@ public static class DependencyInjection
         );
 
         services
-            //.AddSwaggerServicesConfiguration()
             .AddMapsterConfiguration()
             .AddFluentValidationConfiguration()
             .AddDbContextConfiguration(configuration)
@@ -63,14 +60,15 @@ public static class DependencyInjection
         // using of IHttpContextAccessor
         services.AddHttpContextAccessor();
 
-        services.Configure<MailSettings>(configuration.GetSection(nameof(MailSettings)));
+        services.AddOptions<MailSettings>()
+            .BindConfiguration(nameof(MailSettings))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
 
         // using Health Check
         services.AddHealthChecks()
             .AddSqlServer(name: "database", connectionString: configuration.GetConnectionString("DefaultConnection")!)
             .AddHangfire(options => { options.MinimumAvailableServers = 1; })
-            //.AddUrlGroup(name: "google api", uri: new Uri("https://www.google.com"), tags: ["api"], httpMethod: HttpMethod.Get)
-            //.AddUrlGroup(name: "meta api", uri: new Uri("https://www.facebook.com"), tags: ["api"], httpMethod: HttpMethod.Get)
             .AddCheck<MailProviderHealthCheck>(name: "mail service");
 
         // uisng Rate Limiting
@@ -114,16 +112,6 @@ public static class DependencyInjection
         return services;
     }
 
-    //private static IServiceCollection AddSwaggerServicesConfiguration(this IServiceCollection services)
-    //{
-    //    // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-    //    //services.AddOpenApi();
-    //    //services.AddEndpointsApiExplorer();
-    //    //services.AddSwaggerGen();
-
-    //    //return services;
-    //}
-
     private static IServiceCollection AddMapsterConfiguration(this IServiceCollection services)
     {
         // Add Mapster Package
@@ -158,7 +146,6 @@ public static class DependencyInjection
 
     private static IServiceCollection AddAuthenticationConfiguration(this IServiceCollection services, IConfiguration configuration)
     {
-        //services.AddIdentity<ApplicationUser, IdentityRole>()
         services.AddIdentity<ApplicationUser, ApplicationRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
@@ -169,7 +156,6 @@ public static class DependencyInjection
         services.AddSingleton<IJwtProvider, JwtProvider>();
 
         // Jwt Authentication Configuration
-        //services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
         services.AddOptions<JwtOptions>()
             .BindConfiguration(JwtOptions.SectionName)
             .ValidateDataAnnotations()
@@ -210,12 +196,6 @@ public static class DependencyInjection
             options.Lockout.MaxFailedAccessAttempts = 5;
             options.Lockout.AllowedForNewUsers = true;
         });
-
-        // using OpenApi
-        //services.AddAuthorization(o =>
-        //{
-        //    o.AddPolicy("ApiAdminPolicy", b => b.RequireRole(DefaultRoles.Admin));
-        //});
 
         return services;
     }
