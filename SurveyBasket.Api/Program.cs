@@ -2,6 +2,7 @@ using Hangfire;
 using HangfireBasicAuthenticationFilter;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Scalar.AspNetCore;
 using Serilog;
 
 namespace SurveyBasket.Api
@@ -25,8 +26,14 @@ namespace SurveyBasket.Api
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
+                //app.UseSwagger();
+                //app.UseSwaggerUI(option => option.SwaggerEndpoint("/openapi/v1.json", "v1"));
+
+                // using OpenApi
+                //app.MapOpenApi()
+                //    .RequireAuthorization("ApiAdminPolicy");
                 app.MapOpenApi();
-                app.UseSwaggerUI(option => option.SwaggerEndpoint("/openapi/v1.json", "v1"));
+                app.MapScalarApiReference();
             }
 
             // using serilog for logging
