@@ -52,98 +52,98 @@ namespace SurveyBasket.Api.Persistence.Migrations
                             Id = 1,
                             ClaimType = "permissions",
                             ClaimValue = "polls:read",
-                            RoleId = "44bf0349-4864-40ee-92bd-7fb43c4af571"
+                            RoleId = "0191a4b6-c4fc-752e-9d95-40b5e4e68054"
                         },
                         new
                         {
                             Id = 2,
                             ClaimType = "permissions",
                             ClaimValue = "polls:add",
-                            RoleId = "44bf0349-4864-40ee-92bd-7fb43c4af571"
+                            RoleId = "0191a4b6-c4fc-752e-9d95-40b5e4e68054"
                         },
                         new
                         {
                             Id = 3,
                             ClaimType = "permissions",
                             ClaimValue = "polls:update",
-                            RoleId = "44bf0349-4864-40ee-92bd-7fb43c4af571"
+                            RoleId = "0191a4b6-c4fc-752e-9d95-40b5e4e68054"
                         },
                         new
                         {
                             Id = 4,
                             ClaimType = "permissions",
                             ClaimValue = "polls:delete",
-                            RoleId = "44bf0349-4864-40ee-92bd-7fb43c4af571"
+                            RoleId = "0191a4b6-c4fc-752e-9d95-40b5e4e68054"
                         },
                         new
                         {
                             Id = 5,
                             ClaimType = "permissions",
                             ClaimValue = "questions:read",
-                            RoleId = "44bf0349-4864-40ee-92bd-7fb43c4af571"
+                            RoleId = "0191a4b6-c4fc-752e-9d95-40b5e4e68054"
                         },
                         new
                         {
                             Id = 6,
                             ClaimType = "permissions",
                             ClaimValue = "questions:add",
-                            RoleId = "44bf0349-4864-40ee-92bd-7fb43c4af571"
+                            RoleId = "0191a4b6-c4fc-752e-9d95-40b5e4e68054"
                         },
                         new
                         {
                             Id = 7,
                             ClaimType = "permissions",
                             ClaimValue = "questions:update",
-                            RoleId = "44bf0349-4864-40ee-92bd-7fb43c4af571"
+                            RoleId = "0191a4b6-c4fc-752e-9d95-40b5e4e68054"
                         },
                         new
                         {
                             Id = 8,
                             ClaimType = "permissions",
                             ClaimValue = "users:read",
-                            RoleId = "44bf0349-4864-40ee-92bd-7fb43c4af571"
+                            RoleId = "0191a4b6-c4fc-752e-9d95-40b5e4e68054"
                         },
                         new
                         {
                             Id = 9,
                             ClaimType = "permissions",
                             ClaimValue = "users:add",
-                            RoleId = "44bf0349-4864-40ee-92bd-7fb43c4af571"
+                            RoleId = "0191a4b6-c4fc-752e-9d95-40b5e4e68054"
                         },
                         new
                         {
                             Id = 10,
                             ClaimType = "permissions",
                             ClaimValue = "users:update",
-                            RoleId = "44bf0349-4864-40ee-92bd-7fb43c4af571"
+                            RoleId = "0191a4b6-c4fc-752e-9d95-40b5e4e68054"
                         },
                         new
                         {
                             Id = 11,
                             ClaimType = "permissions",
                             ClaimValue = "roles:read",
-                            RoleId = "44bf0349-4864-40ee-92bd-7fb43c4af571"
+                            RoleId = "0191a4b6-c4fc-752e-9d95-40b5e4e68054"
                         },
                         new
                         {
                             Id = 12,
                             ClaimType = "permissions",
                             ClaimValue = "roles:add",
-                            RoleId = "44bf0349-4864-40ee-92bd-7fb43c4af571"
+                            RoleId = "0191a4b6-c4fc-752e-9d95-40b5e4e68054"
                         },
                         new
                         {
                             Id = 13,
                             ClaimType = "permissions",
                             ClaimValue = "roles:update",
-                            RoleId = "44bf0349-4864-40ee-92bd-7fb43c4af571"
+                            RoleId = "0191a4b6-c4fc-752e-9d95-40b5e4e68054"
                         },
                         new
                         {
                             Id = 14,
                             ClaimType = "permissions",
                             ClaimValue = "results:read",
-                            RoleId = "44bf0349-4864-40ee-92bd-7fb43c4af571"
+                            RoleId = "0191a4b6-c4fc-752e-9d95-40b5e4e68054"
                         });
                 });
 
@@ -211,8 +211,8 @@ namespace SurveyBasket.Api.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = "0e3c4709-bfee-4c3e-afe3-862af02b18c8",
-                            RoleId = "44bf0349-4864-40ee-92bd-7fb43c4af571"
+                            UserId = "0191a4b6-c4fc-752e-9d95-40b30fa7a9b6",
+                            RoleId = "0191a4b6-c4fc-752e-9d95-40b5e4e68054"
                         });
                 });
 
@@ -297,8 +297,8 @@ namespace SurveyBasket.Api.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "44bf0349-4864-40ee-92bd-7fb43c4af571",
-                            ConcurrencyStamp = "f12619e1-1d13-4012-8ce3-562aa5bdf03b",
+                            Id = "0191a4b6-c4fc-752e-9d95-40b5e4e68054",
+                            ConcurrencyStamp = "0191a4b6-c4fc-752e-9d95-40b631d1866d",
                             IsDefault = false,
                             IsDeleted = false,
                             Name = "Admin",
@@ -306,8 +306,8 @@ namespace SurveyBasket.Api.Persistence.Migrations
                         },
                         new
                         {
-                            Id = "a12ee1e9-2555-4e2f-8aa9-aa4a9a94d05d",
-                            ConcurrencyStamp = "43de3594-fe83-4e63-bcf5-da5857229bb0",
+                            Id = "0191a4b6-c4fc-752e-9d95-40b7a5cb88f0",
+                            ConcurrencyStamp = "0191a4b6-c4fc-752e-9d95-40b85cf3fd22",
                             IsDefault = true,
                             IsDeleted = false,
                             Name = "Member",
@@ -395,9 +395,9 @@ namespace SurveyBasket.Api.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "0e3c4709-bfee-4c3e-afe3-862af02b18c8",
+                            Id = "0191a4b6-c4fc-752e-9d95-40b30fa7a9b6",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "013d96f6-02f3-4caf-bffb-236f7c7603d5",
+                            ConcurrencyStamp = "0191a4b6-c4fc-752e-9d95-40b42a925b8e",
                             Email = "admin@survey-basket.com",
                             EmailConfirmed = true,
                             FirstName = "Survey Basket",
